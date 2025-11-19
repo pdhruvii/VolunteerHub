@@ -1,0 +1,65 @@
+version: "3.8"
+
+services:
+  api:
+    # 注意：Swarm 不支持 build，这里使用预先构建的本地镜像标签
+    image: vhub-api:swarm
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "${PORT}"
+      API_KEY: "${API_KEY}"
+      DB_HOST: "db"
+      DB_PORT: "${DB_PORT}"
+      DB_USER: "${DB_USER}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      DB_NAME: "${DB_NAME}"
+      JWT_SECRET: "${JWT_SECRET}"
+      JWT_EXPIRES: "${JWT_EXPIRES}"
+      ALLOW_IMPERSONATION: "${ALLOW_IMPERSONATION}"
+      ENABLE_ROUTE_RBAC: "${ENABLE_ROUTE_RBAC}"
+    networks:
+      - app-net
+    deploy:
+      replicas: 2                   # ← 演示副本数
+      update_config:
+        order: start-first
+        parallelism: 1
+        delay: 2s
+      restart_policy:
+        condition: on-failure
+
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: "${DB_NAME}"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    # 使用 configs 把 init.sql 注入到初始化目录（首次创建卷时生效）
+    configs:
+      - source: init_sql
+        target: /docker-entrypoint-initdb.d/init.sql
+        mode: 0444
+    networks:
+      - app-net
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager      # 单机 Swarm，固定在 manager 上
+      restart_policy:
+        condition: on-failure
+
+networks:
+  app-net:
+    driver: overlay
+
+volumes:
+  db-data:
+
+configs:
+  init_sql:
+    file: ./init.sql

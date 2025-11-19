@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    container_name: cadvisor
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    # 下面这些挂载在 Linux 主机最准确；在 Docker Desktop (Win/Mac) 也常能工作
+    volumes:
+      - /:/rootfs:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /sys:/sys:ro
+    privileged: true
