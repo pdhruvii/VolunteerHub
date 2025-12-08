@@ -2,8 +2,7 @@ version: "3.8"
 
 services:
   api:
-    # 注意：Swarm 不支持 build，这里使用预先构建的本地镜像标签
-    image: vhub-api:swarm
+    image: vigiler1111/volunteerhub-api:latest
     ports:
       - "3000:3000"
     environment:
@@ -21,7 +20,7 @@ services:
     networks:
       - app-net
     deploy:
-      replicas: 2                   # ← 演示副本数
+      replicas: 2                   
       update_config:
         order: start-first
         parallelism: 1
@@ -39,7 +38,6 @@ services:
       POSTGRES_DB: "${DB_NAME}"
     volumes:
       - db-data:/var/lib/postgresql/data
-    # 使用 configs 把 init.sql 注入到初始化目录（首次创建卷时生效）
     configs:
       - source: init_sql
         target: /docker-entrypoint-initdb.d/init.sql
@@ -49,7 +47,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.role == manager      # 单机 Swarm，固定在 manager 上
+          - node.role == manager      
       restart_policy:
         condition: on-failure
 
