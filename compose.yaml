@@ -11,10 +11,10 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
-      - JWT_SECRET=${JWT_SECRET}            # ← 新增
-      - JWT_EXPIRES=${JWT_EXPIRES}          # ← 新增
-      - ALLOW_IMPERSONATION=${ALLOW_IMPERSONATION}  # 建议本地 true，生产 false
-      - ENABLE_ROUTE_RBAC=${ENABLE_ROUTE_RBAC}      # 建议本地 true，生产按需
+      - JWT_SECRET=${JWT_SECRET}            
+      - JWT_EXPIRES=${JWT_EXPIRES}          
+      - ALLOW_IMPERSONATION=${ALLOW_IMPERSONATION}  
+      - ENABLE_ROUTE_RBAC=${ENABLE_ROUTE_RBAC}      
     depends_on:
       db:
         condition: service_healthy
