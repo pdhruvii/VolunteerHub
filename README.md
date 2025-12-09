@@ -97,7 +97,7 @@ Data is stored in PostgreSQL.
 The API is built with Node.js + Express, runs in Docker, and can be deployed to a Docker Swarm cluster.
 
 ### 2. Running the Application
-2.1. Prerequisites
+#### 2.1. Prerequisites
 
 On a machine where you want to run VolunteerHub locally:
 
@@ -142,7 +142,7 @@ docker compose ps
 
 You should now have:
 
-API at http://localhost:3000
+API at http://138.197.165.117:3000/
 
 PostgreSQL at port 5432 inside Docker network
 
@@ -151,10 +151,10 @@ PostgreSQL at port 5432 inside Docker network
 Verify the service is up:
 
 Process health:
-GET http://localhost:3000/health/alive → should return 200
+GET http://138.197.165.117:3000/health/alive → should return 200
 
 Database health:
-GET http://localhost:3000/health/db → 200 if DB is reachable
+GET http://138.197.165.117:3000/health/db → 200 if DB is reachable
 
 ### 3. Authentication & Roles
 #### 3.1. Register Users
