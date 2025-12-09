@@ -455,7 +455,7 @@ A cron job runs this script every night, e.g.:
 0 3 * * * /home/youruser/VolunteerHub/ops/backup.sh >> /home/youruser/VolunteerHub/backup.log 2>&1
 
 
-How to demonstrate to the TA
+Demonstration:
 
 SSH into the server.
 
@@ -491,7 +491,7 @@ pg_restore -h 127.0.0.1 -p 5432 -U "$DB_USER" -d "$DB_NAME" --clean /tmp/latest.
 
 Deletes the local temporary backup file.
 
-How to demonstrate to the TA
+Demonstrate:
 
 Optionally scale down API service to avoid writes: docker service scale volunteerhub_api=0
 
