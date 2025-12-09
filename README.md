@@ -20,7 +20,7 @@ That's why we built VolunteerHub. We kept the scope minimal and focused on a cle
 
 VolunteerHub directly solves the real coordination problem we experience every semester in student clubs, and it gave us the perfect way to master Docker, Docker Compose, Docker Swarm, persistent volumes, orchestration, monitoring, CI/CD, and backup strategies, as laid out in the learning objectives of ECE1779.
 
-## Objective
+## Objectives
 
 The primary objective of this project was to design, implement, and deploy a fully functional, stateful, cloud-native application that satisfies all technical requirements of ECE1779 while remaining simple, reliable, and useful in real life.
 Through this implementation, we specifically aimed to:
