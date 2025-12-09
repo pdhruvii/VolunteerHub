@@ -501,18 +501,6 @@ Scale API back up: docker service scale volunteerhub_api=2
 
 Show that data in the DB matches the backup (for example, events you created earlier reappear).
 
-### 10. Real-time WebSocket Updates (Planned Feature)
-
-In the original proposal, VolunteerHub planned real-time updates via WebSockets:
-
-When a volunteer changes status (Accepted/Tentative/Declined), the coordinator’s UI would update immediately.
-
-When a coordinator edits an event, all assigned volunteers would see live updates.
-
-At the moment this feature is not yet implemented in the codebase.
-It is documented here as planned future work and can be added later using a library such as socket.io or ws.
-
-
 ## Development Guide
 
 This section explains how to set up the **Development Environment** for VolunteerHub, including
