@@ -9,7 +9,7 @@
     - Email: dhruviii.patel@mail.utoronto.ca
 
 ## Demo Video
-Google Drive Link: 
+Google Drive Link: https://drive.google.com/file/d/1UEj5IabvmXE26nbtMblwlXnPJM5d8uIe/view?usp=sharing
 
 ## Motivation
 Coordinating volunteers is a surprisingly hard and time-consuming task for small organizations and community groups. Most teams still rely on a mix of Google Sheets, Excel files, email threads, WhatsApp groups, or paper sign-up sheets. These methods are slow, error-prone, and provide no reliable way of knowing who has actually committed to volunteering. When event details or attendance of volunteers changes at the last minute, updating everyone becomes nearly impossible, and coordinators often spend hours manually trying to get responses.
