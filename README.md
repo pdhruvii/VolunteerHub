@@ -33,10 +33,10 @@ Through this implementation, we specifically aimed to:
     - Production orchestration using Docker Swarm with two API replicas, built-in load balancing, rolling updates, and automatic restart policies
     - Health endpoints (/health/alive and /health/db) and monitoring via DigitalOcean built-in graphs and email alerts and also local cAdvisor
 - Implement two complete advanced features:
-    - Establishing fully automated nightly PostgreSQL backups to DigitalOcean Spaces with a tested one-command restore capability
+    - Establishing fully automated nightly PostgreSQL backups to DigitalOcean Spaces with a tested single command restore capability
     - Achieving secure, automated, zero-downtime continuous deployment via a GitHub Actions CI/CD pipeline that builds, pushes the image, and triggers a rolling update on the Swarm cluster
 
-- Keep the system lightweight by delivering a clean, well-documented REST API instead of a frontend, making it instantly usable with Postman or curl and easy for future extensions, while ensuring the entire stack can be deployed and operated by any small groups with almost no overhead.
+- Keep the system lightweight by providing a well-documented REST API instead of a frontend, making it instantly usable with Postman/curl and ensuring easy stack deployment.
 
 ## Technical Stack
 
@@ -64,10 +64,9 @@ Assignment management allows coordinators to add volunteers to events with POST 
 
 Health and monitoring are built-in features: /health/alive confirms the process is running, and /health/db verifies database connectivity with a simple query. These endpoints fulfill course requirements for observability and integrate with DigitalOcean's metrics, where we configured alerts for high CPU and disk usage. Local cAdvisor (via monitoring.compose.yaml) provides container-level insights, demonstrating full monitoring compliance.
 
-Our two advanced features extend the core system as required. The CI/CD pipeline, implemented with GitHub Actions, automates builds, Docker Hub pushes (using repository secrets for authentication), and SSH-based Swarm deploys for rolling updates, fulfilling course requirements for CI/CD and achieving our third objective by ensuring reproducible, zero-downtime releases. Automated backups run nightly via cron, using backup.sh to pg_dump the database in compressed format, upload to DigitalOcean Spaces with AWS CLI, and enable one-command recovery with restore_latest.sh (which downloads, drops/recreates, and restores the database). This feature directly fulfills backup/recovery requirements, protects persistent data off-site, and demonstrates readiness for data loss cases.
+Our two advanced features extend the core system as required. Our first advanced feature is automated backup and recovery. This system includes an automated backup and recovery mechanism for the PostgreSQL database. A cron‑scheduled backup.sh script runs nightly on the DigitalOcean Droplet, using pg_dump in custom format to generate timestamped backups of the Swarm‑managed database and upload them to a dedicated DigitalOcean Spaces bucket via the S3‑compatible AWS CLI. A complementary restore_latest.sh script has been validated to support one‑command disaster recovery: it retrieves the most recent backup from Spaces, drops and recreates the target database, and uses pg_restore to fully reconstruct the schema and data. This feature directly fulfills backup/recovery requirements, protects persistent data off-site, and demonstrates readiness for data loss cases. Our second advanced feature is CI/CD Pipeline with GitHub Actions. A secure CI/CD pipeline is implemented using GitHub Actions to automate build and deployment of the VolunteerHub API. On every push to the main branch, the workflow builds the Docker image, authenticates to Docker Hub using encrypted repository secrets (for example DOCKERHUB_USERNAME and DOCKERHUB_TOKEN), and pushes an updated image tag. The pipeline then performs a remote deployment step by establishing an SSH connection to the DigitalOcean Droplet using a private key stored in GitHub Secrets and executing docker stack deploy to apply a rolling update to the Swarm stack, ensuring zero‑downtime releases of the backend service.
 
 By focusing on an API-only design without a frontend, we make VolunteerHub instantly usable with tools like Postman while keeping it lightweight for small groups to deploy on a single Droplet.
-
 
 ## User Guide
 
@@ -434,7 +433,7 @@ This project turned out to be a valuable learning experience for us. Building an
 
 A key lesson was how simple Docker Swarm is once you understand placement constraints and overlay networks. Getting the database to stay on the manager node with the attached volume took only one line in docker-stack.yml, yet it completely solved data persistence across redeployments. We now see why Swarm is perfect for small-to-medium production workloads instead of jumping straight to Kubernetes, especially for projects like VolunteerHub.
 
-We also learned that real operational reliability comes from repetitive automation. Writing the tedious backup.sh and restore_latest.sh scripts helped us restore everything in under sixty seconds with one command, improving efficiency significantly. The same goes for the GitHub Actions pipeline as well, since we are able to update production automatically with zero downtime with every push (instead of SSHing and typing in docker stack deploy everytime).
+We also learned that real operational reliability comes from repetitive automation. Writing the tedious backup.sh and restore_latest.sh scripts helped us restore everything in under a minute with one command, improving efficiency significantly. The same goes for the GitHub Actions pipeline as well, since we are able to update production automatically with zero downtime with every push.
 
 Working without a frontend forced us to make the API extremely clean and well-documented, which was a good decision. Testing with Postman, Thunder Client, and curl is faster than any UI, and we now believe that building a solid, versioned REST API first is the right way to develop almost any full-stack project. We were also reminded that secrets management matters even for a course project, as taught in class. Using GitHub repository secrets for Docker Hub credentials and the Droplet SSH key, and never committing anything sensitive, made the CI/CD pipeline feel truly production-grade.
 
