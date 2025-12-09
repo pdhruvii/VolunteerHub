@@ -3,8 +3,8 @@ set -euo pipefail
 
 source /root/VolunteerHub/.env
 
-SPACE_NAME="volunteerhub-backups"      # ← 你的 Space 名（如果不一样再改）
-SPACE_REGION="tor1"                    # ← Toronto · TOR1 对应 tor1
+SPACE_NAME="volunteerhub-backups"      
+SPACE_REGION="tor1"                   
 ENDPOINT="https://${SPACE_REGION}.digitaloceanspaces.com"
 
 LATEST=$(aws s3 ls "s3://${SPACE_NAME}/db/" --endpoint-url "$ENDPOINT" | sort | tail -n 1 | awk '{print $4}')
