@@ -77,7 +77,7 @@ This guide explains how to run the VolunteerHub backend and how a user (coordina
 Note: VolunteerHub is a backend-only service (no HTML UI).
 You interact with it using tools such as Postman, curl, or any HTTP client.
 
-###1. System Overview
+### 1. System Overview
 
 VolunteerHub manages events and volunteers with two roles:
 
@@ -96,7 +96,7 @@ responds Accepted / Tentative / Declined
 Data is stored in PostgreSQL.
 The API is built with Node.js + Express, runs in Docker, and can be deployed to a Docker Swarm cluster.
 
-###2. Running the Application
+### 2. Running the Application
 2.1. Prerequisites
 
 On a machine where you want to run VolunteerHub locally:
@@ -105,11 +105,11 @@ Docker & Docker Compose installed
 
 Git installed
 
-2.2. Clone the Repository
+#### 2.2. Clone the Repository
 git clone https://github.com/pdhruvii/VolunteerHub.git
 cd VolunteerHub
 
-2.3. Create a .env file (local development)
+#### 2.3. Create a .env file (local development)
 
 In the project root, create .env:
 
@@ -131,7 +131,7 @@ ENABLE_ROUTE_RBAC=true
 
 These values must match the values used in compose.yaml and init.sql (user / password / db name).
 
-2.4. Start with Docker Compose (local)
+#### 2.4. Start with Docker Compose (local)
 docker compose up -d
 
 
@@ -146,7 +146,7 @@ API at http://localhost:3000
 
 PostgreSQL at port 5432 inside Docker network
 
-2.5. Health Checks
+#### 2.5. Health Checks
 
 Verify the service is up:
 
@@ -156,8 +156,8 @@ GET http://localhost:3000/health/alive → should return 200
 Database health:
 GET http://localhost:3000/health/db → 200 if DB is reachable
 
-###3. Authentication & Roles
-3.1. Register Users
+### 3. Authentication & Roles
+#### 3.1. Register Users
 
 Endpoint: POST /register (public)
 
@@ -185,7 +185,7 @@ Response:
 
 { "id": "..." }
 
-3.2. Login to Get JWT
+#### 3.2. Login to Get JWT
 
 Endpoint: POST /login (public)
 
@@ -212,7 +212,7 @@ Response:
 
 Copy the token value.
 
-3.3. Use the Token for Authenticated Requests
+#### 3.3. Use the Token for Authenticated Requests
 
 For all protected endpoints, set header:
 
@@ -227,11 +227,11 @@ attach req.user = { id, role, email }
 
 enforce permissions via requireRole(...).
 
-###4. Coordinator Workflow
+### 4. Coordinator Workflow
 
 All coordinator actions require a JWT of a coordinator user.
 
-4.1. Create an Event
+#### 4.1. Create an Event
 
 Endpoint: POST /events
 Role: coordinator
@@ -263,7 +263,7 @@ Response (simplified):
   "created_by": "coordinator-uuid"
 }
 
-4.2. List All Events
+#### 4.2. List All Events
 
 Endpoint: GET /events
 Role: coordinator or volunteer
@@ -281,14 +281,14 @@ Returns an array of events ordered by date and start time.
   }
 ]
 
-4.3. View a Single Event
+#### 4.3. View a Single Event
 
 Endpoint: GET /events/:id
 
 Example:
 GET /events/event-uuid
 
-4.4. Edit an Event
+#### 4.4. Edit an Event
 
 Endpoint: PATCH /events/:id
 Role: coordinator (must be creator)
@@ -303,15 +303,15 @@ Body (only fields to change):
 
 If the coordinator is the creator, event will be updated and updated_at refreshed.
 
-4.5. Delete an Event
+#### 4.5. Delete an Event
 
 Endpoint: DELETE /events/:id
 Role: coordinator (must be creator)
 
 If successful, API returns HTTP 204 No Content.
 
-###5. Volunteer Assignment Workflow
-5.1. Assign Volunteer to an Event (Coordinator)
+### 5. Volunteer Assignment Workflow
+#### 5.1. Assign Volunteer to an Event (Coordinator)
 
 Endpoint: POST /events/:eventId/assign
 Role: coordinator
@@ -337,18 +337,18 @@ Note: This id is the assignment ID. Volunteers use it to update their response.
 
 If the same volunteer is already assigned, you get HTTP 409 with "Already assigned".
 
-5.2. Remove an Assignment (Coordinator)
+#### 5.2. Remove an Assignment (Coordinator)
 
 Endpoint: DELETE /assignments/:id
 Role: coordinator
 
 If successful → HTTP 204.
 
-###6. Volunteer Workflow
+### 6. Volunteer Workflow
 
 All volunteer actions require a JWT of a volunteer user.
 
-6.1. View Events
+#### 6.1. View Events
 
 Right now, volunteers can see all events via:
 
@@ -356,7 +356,7 @@ GET /events
 
 (There is no separate “my events only” endpoint yet; the assignment information is returned on creation, and can be used with the status update below.)
 
-6.2. Update Participation Status
+#### 6.2. Update Participation Status
 
 Endpoint: PATCH /assignments/:id/status
 Role: volunteer
@@ -373,7 +373,7 @@ Allowed values: "accepted", "tentative", "declined".
 If userId is omitted, the API uses the currently logged-in volunteer’s req.user.id.
 The update succeeds only if the assignment belongs to this volunteer.
 
-###7. Health & Diagnostics
+### 7. Health & Diagnostics
 
 Two helpful endpoints:
 
@@ -389,11 +389,11 @@ returns 500 if the DB is unreachable
 
 These are useful for cloud monitoring and demoing that the service is healthy.
 
-###8. Advanced Feature: CI/CD Pipeline (GitHub Actions + Docker Hub + Swarm)
+### 8. Advanced Feature: CI/CD Pipeline (GitHub Actions + Docker Hub + Swarm)
 
 VolunteerHub includes a CI/CD pipeline that automatically builds and deploys the API to a Docker Swarm cluster.
 
-8.1. What happens on push to main
+#### 8.1. What happens on push to main
 
 When a commit is pushed to the main branch:
 
@@ -421,12 +421,12 @@ Open the “CI/CD - Build and Deploy VolunteerHub API” workflow,
 
 See the build & deploy logs and verify that a new deployment was triggered.
 
-###9. Advanced Feature: Automated Backup & Recovery
+### 9. Advanced Feature: Automated Backup & Recovery
 
 These scripts live in ops/backup.sh and ops/restore_latest.sh in the repo,
 but are designed to run on the Linux server (DigitalOcean Droplet) where the Swarm cluster runs.
 
-9.1. Nightly Backup (pg_dump → DigitalOcean Spaces)
+#### 9.1. Nightly Backup (pg_dump → DigitalOcean Spaces)
 
 On the Swarm manager:
 
@@ -467,7 +467,7 @@ The script prints “Uploaded to Spaces…”
 
 aws s3 ls s3://volunteerhub-backups/db/ ... lists the new .dump file.
 
-9.2. One-command Restore from Latest Backup
+#### 9.2. One-command Restore from Latest Backup
 
 When needed (for demo or real incident), the script restore_latest.sh:
 
@@ -501,7 +501,7 @@ Scale API back up: docker service scale volunteerhub_api=2
 
 Show that data in the DB matches the backup (for example, events you created earlier reappear).
 
-###10. Real-time WebSocket Updates (Planned Feature)
+### 10. Real-time WebSocket Updates (Planned Feature)
 
 In the original proposal, VolunteerHub planned real-time updates via WebSockets:
 
