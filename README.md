@@ -81,13 +81,13 @@ You interact with it using tools such as Postman, curl, or any HTTP client.
 
 VolunteerHub manages events and volunteers with two roles:
 
-Coordinator
+**Coordinator**
 
 creates / edits / deletes events
 
 assigns volunteers to events
 
-Volunteer
+**Volunteer**
 
 sees assigned events
 
