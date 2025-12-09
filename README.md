@@ -124,7 +124,7 @@ DB_NAME=volunteerhub
 JWT_SECRET=some-long-random-secret
 JWT_EXPIRES=1h
 
-# For development you can set these to true
+### For development these can be set to true:
 ALLOW_IMPERSONATION=true
 ENABLE_ROUTE_RBAC=true
 
