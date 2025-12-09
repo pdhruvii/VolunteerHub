@@ -50,7 +50,7 @@ Continuous deployment is fully automated with GitHub Actions that build and push
 
 All secrets and configuration (database credentials, JWT secret, etc.) are supplied through environment variables, kept in a .env file on the Droplet for the Swarm stack and backup scripts, and in GitHub repository secrets for the CI/CD pipeline.
 
-The entire application therefore runs on DigitalOcean using one Droplet, one Block Storage Volume, and one Space, matching the technologies required by ECE1779.
+The entire application therefore runs on DigitalOcean using one Droplet, one Block Storage Volume, and one Space.
 
 ## Features
 
