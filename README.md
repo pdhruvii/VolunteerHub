@@ -40,6 +40,17 @@ Through this implementation, we specifically aimed to:
 
 ## Technical Stack
 
+The backend of VolunteerHub is written in Node.js 22 with Express and runs inside a single Docker container built from a lightweight Dockerfile based on node:22. PostgreSQL 16 serves as the relational database, using the official postgres:16 image. Authentication is handled through JWT tokens signed with a secret key, while passwords are hashed with bcrypt. For easier testing during development, we added custom middleware that allows impersonation of either a coordinator or a volunteer simply by sending an X-Dev-User header. Role-based access control (RBAC) is enforced at the route level so that only coordinators can create, edit, delete events or assign volunteers, while volunteers can only update their own assignment status.
+
+Local development and testing are performed with Docker Compose, defined in compose.yaml, which starts both the API and PostgreSQL containers together with a named volume for data persistence. In production we chose Docker Swarm as our orchestration platform (instead of Kubernetes) because it provides all required features, including replication, load balancing, rolling updates, placement constraints, and restart policies, all while remaining extremely simple to manage on a single Droplet. The Swarm stack is declared in docker-stack.yml and runs two replicas of the API service for redundancy and load distribution, while the PostgreSQL service is pinned to the manager node where the DigitalOcean Block Storage Volume is mounted. This volume guarantees that all user, event, and assignment data persists across container restarts, Swarm redeployments, or Droplet reboots.
+
+Health checking is provided by two endpoints (/health/alive and /health/db), and monitoring is achieved through DigitalOcean's built-in droplet metrics with email alerts configured for CPU above 80 % and disk usage above 90 %. Locally we also run cAdvisor for detailed container-level statistics.
+
+Continuous deployment is fully automated with GitHub Actions that build and push the API image to Docker Hub (authenticated via repository secrets) and then SSH into the Droplet to execute a zero-downtime docker stack deploy. Database backups run automatically every night using a cron job that executes pg_dump in compressed custom format, uploads the dump to a dedicated DigitalOcean Spaces bucket in the tor1 region using the AWS CLI, and logs everything to a file. Recovery is possible in one command due to the restore_latest.sh script that downloads the newest backup and fully restores the database.
+
+All secrets and configuration (database credentials, JWT secret, etc.) are supplied through environment variables, kept in a .env file on the Droplet for the Swarm stack and backup scripts, and in GitHub repository secrets for the CI/CD pipeline.
+
+The entire application therefore runs on DigitalOcean using one Droplet, one Block Storage Volume, and one Space, matching the technologies required by ECE1779.
 
 ## Features
 
@@ -52,6 +63,9 @@ Through this implementation, we specifically aimed to:
 
 ## Deployment Information
 
+- http://138.197.165.117:3000/
+- http://138.197.165.117:3000/health/alive
+- http://138.197.165.117:3000/health/db
 
 ## Individual Contributions
 
